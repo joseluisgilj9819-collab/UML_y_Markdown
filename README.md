@@ -85,3 +85,57 @@ classDiagram
     VistaConsola ..|> VistaCalculadora : implementa
     VistaGrafica ..|> VistaCalculadora : implementará
 ```
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Main
+    participant ControladorCalculadora
+    participant GestorOperaciones
+    participant Calculadora
+
+    Usuario->>Main: ejecutar programa
+    Main->>ControladorCalculadora: new ControladorCalculadora()
+    Main->>ControladorCalculadora: ejecutar()
+
+    ControladorCalculadora->>ControladorCalculadora: entrada.leerOperacion() → op
+    ControladorCalculadora->>ControladorCalculadora: entrada.leerNumeros() → a, b
+
+    ControladorCalculadora->>GestorOperaciones: resolver(op, a, b)
+    GestorOperaciones->>Calculadora: sumar(a, b) / restar(a, b) / multiplicar(a, b) / dividir(a, b)
+    Calculadora-->>GestorOperaciones: resultado: double
+    GestorOperaciones-->>ControladorCalculadora: resultado: double
+
+    ControladorCalculadora->>ControladorCalculadora: salida.mostrar(resultado)
+    ControladorCalculadora-->>Usuario: muestra resultado
+```
+
+
+```mermaid
+stateDiagram-v2
+    [*] --> Inicio : Main.main()
+
+    Inicio --> EsperandoOperacion : ControladorCalculadora inicializado
+
+    EsperandoOperacion --> EsperandoOperandos : operación ingresada (op)
+
+    EsperandoOperandos --> ProcesandoCalculo : operandos ingresados (a, b)
+
+    ProcesandoCalculo --> Sumando : op == "+"
+    ProcesandoCalculo --> Restando : op == "-"
+    ProcesandoCalculo --> Multiplicando : op == "*"
+    ProcesandoCalculo --> Dividiendo : op == "/"
+    ProcesandoCalculo --> ErrorOperacion : op desconocida
+
+    Sumando --> MostrandoResultado : resultado = a + b
+    Restando --> MostrandoResultado : resultado = a - b
+    Multiplicando --> MostrandoResultado : resultado = a * b
+    Dividiendo --> MostrandoResultado : resultado = a / b
+    Dividiendo --> ErrorDivision : b == 0
+
+    ErrorOperacion --> EsperandoOperacion : reintentar
+    ErrorDivision --> EsperandoOperandos : reintentar
+
+    MostrandoResultado --> EsperandoOperacion : nueva operación
+    MostrandoResultado --> [*] : salir
+```
